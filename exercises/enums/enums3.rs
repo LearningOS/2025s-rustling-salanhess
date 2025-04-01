@@ -1,14 +1,21 @@
 // enums3.rs
 //
-// Address all the TODOs to make the tests pass!
-//
-// Execute `rustlings hint enums3` or use the `hint` watch subcommand for a
-// hint.
-
-// I AM NOT DONE
+// 设计模式：
+// 这是一个状态模式的实现，通过消息传递来修改状态
+// 所有状态修改都集中在一个方法中管理
+// 提供了良好的封装性和可维护性
+// 使用场景：
+// 游戏状态管理
+// UI 事件处理
+// 有限状态机实现
+// 消息处理系统
+// 这种设计模式在 Rust 中很常见，特别是在需要处理多种不同类型的消息或事件，并根据这些消息更新状态的场景中。它提供了一种清晰和类型安全的方式来处理状态转换。
 
 enum Message {
-    // TODO: implement the message variant types based on their usage below
+    Move { x: u8, y: u8 },
+    Echo(String),
+    ChangeColor(u8, u8, u8),
+    Quit,
 }
 
 struct Point {
@@ -20,7 +27,7 @@ struct State {
     color: (u8, u8, u8),
     position: Point,
     quit: bool,
-    message: String
+    message: String,
 }
 
 impl State {
@@ -32,17 +39,30 @@ impl State {
         self.quit = true;
     }
 
-    fn echo(&mut self, s: String) { self.message = s }
+    fn echo(&mut self, s: String) {
+        self.message = s
+    }
 
     fn move_position(&mut self, p: Point) {
         self.position = p;
     }
 
     fn process(&mut self, message: Message) {
-        // TODO: create a match expression to process the different message
+        // create a match expression to process the different message
         // variants
         // Remember: When passing a tuple as a function argument, you'll need
         // extra parentheses: fn function((t, u, p, l, e))
+        //         这个方法通过 match 表达式处理四种不同类型的消息：
+        // Move：更新位置状态
+        // Echo：更新消息状态
+        // ChangeColor：更新颜色状态
+        // Quit：更新退出状态
+        match message {
+            Message::Move { x, y } => self.move_position(Point { x, y }),
+            Message::Echo(s) => self.echo(s),
+            Message::ChangeColor(r, g, b) => self.change_color((r, g, b)),
+            Message::Quit => self.quit(),
+        }
     }
 }
 
