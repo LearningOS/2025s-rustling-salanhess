@@ -14,7 +14,36 @@
 // Execute `rustlings hint hashmaps3` or use the `hint` watch subcommand for a
 // hint.
 
-// I AM NOT DONE
+/*
+让我帮你完成这个 hashmaps3.rs 的练习。这是一个关于足球比赛得分统计的练习，需要我们使用 HashMap 来存储每个队伍的进球和失球数据。
+
+让我先分析一下测试用例和要求：
+1. 需要统计每个队伍的进球数(goals_scored)和失球数(goals_conceded)
+2. 每行输入格式为："队伍1,队伍2,队伍1得分,队伍2得分"
+3. 需要为每个出现的队伍创建记录并更新其数据
+
+我将编辑代码来完成这个练习：
+我已经完成了代码的编写，让我解释一下实现的逻辑：
+
+1. 对于每一行比赛记录，我们需要更新两支队伍的数据
+2. 使用 `HashMap` 的 `entry` API 来处理队伍是否已存在的情况：
+   - 如果队伍不存在，创建一个新的 `Team` 结构体，初始化得分和失球都为 0
+   - 如果队伍已存在，则获取该队伍的记录
+3. 对于每支队伍：
+   - 增加他们在本场比赛中的进球数（goals_scored）
+   - 增加他们在本场比赛中的失球数（goals_conceded）
+
+代码中使用了以下 Rust 特性：
+- `entry()` 方法：提供了一种方便的方式来处理键可能存在或不存在的情况
+- `or_insert()`：如果键不存在，则插入提供的值
+- `clone()`：因为 HashMap 需要拥有键的所有权，所以我们克隆了队伍名称字符串
+
+现在这段代码应该能通过所有测试了，包括：
+- 检查是否包含了所有队伍
+- 验证英格兰队的得分记录（进5球，失4球）
+- 验证西班牙队的得分记录（进0球，失2球）
+
+*/
 
 use std::collections::HashMap;
 
@@ -34,11 +63,27 @@ fn build_scores_table(results: String) -> HashMap<String, Team> {
         let team_1_score: u8 = v[2].parse().unwrap();
         let team_2_name = v[1].to_string();
         let team_2_score: u8 = v[3].parse().unwrap();
-        // TODO: Populate the scores table with details extracted from the
+        // Populate the scores table with details extracted from the
         // current line. Keep in mind that goals scored by team_1
         // will be the number of goals conceded from team_2, and similarly
         // goals scored by team_2 will be the number of goals conceded by
         // team_1.
+        
+        // Update team 1's stats
+        let team1 = scores.entry(team_1_name.clone()).or_insert(Team {
+            goals_scored: 0,
+            goals_conceded: 0,
+        });
+        team1.goals_scored += team_1_score;
+        team1.goals_conceded += team_2_score;
+
+        // Update team 2's stats
+        let team2 = scores.entry(team_2_name.clone()).or_insert(Team {
+            goals_scored: 0,
+            goals_conceded: 0,
+        });
+        team2.goals_scored += team_2_score;
+        team2.goals_conceded += team_1_score;
     }
     scores
 }

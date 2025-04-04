@@ -16,32 +16,6 @@ Ran tool
 1. `fruits`和`veggies`子模块是私有的
 2. 我们需要让`fruit`和`veggie`在`delicious_snacks`模块外可见
 
-让我编辑文件来修复这个问题：
-
-```rust:exercises/modules/modules2.rs
-mod delicious_snacks {
-    pub use self::fruits::PEAR as fruit;
-    pub use self::veggies::CUCUMBER as veggie;
-
-    mod fruits {
-        pub const PEAR: &'static str = "Pear";
-        pub const APPLE: &'static str = "Apple";
-    }
-
-    mod veggies {
-        pub const CUCUMBER: &'static str = "Cucumber"; 
-        pub const CARROT: &'static str = "Carrot";
-    }
-}
-
-fn main() {
-    println!(
-        "favorite snacks: {} and {}",
-        delicious_snacks::fruit,
-        delicious_snacks::veggie
-    );
-}
-```
 我已经修复了代码。主要的改动是：
 
 1. 将 `use` 声明改为 `pub use`，这样重导出的名称 `fruit` 和 `veggie` 在 `delicious_snacks` 模块外也可见。
