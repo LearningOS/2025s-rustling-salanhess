@@ -7,7 +7,12 @@
 // Execute `rustlings hint traits4` or use the `hint` watch subcommand for a
 // hint.
 
-// I AM NOT DONE
+// https://doc.rust-lang.org/book/ch10-02-traits.html#traits-as-parameters
+/*
+指定impl  keyword and the trait name。此参数接受实现 指定的traitn即特征。
+in the body of notify,我们可以调用any method on the item that come from the Summary trait
+Code that calls the function with any other type,
+*/
 
 pub trait Licensed {
     fn licensing_info(&self) -> String {
@@ -23,7 +28,7 @@ impl Licensed for SomeSoftware {}
 impl Licensed for OtherSoftware {}
 
 // YOU MAY ONLY CHANGE THE NEXT LINE
-fn compare_license_types(software: ??, software_two: ??) -> bool {
+fn compare_license_types(software: impl Licensed, software_two: impl Licensed) -> bool {
     software.licensing_info() == software_two.licensing_info()
 }
 
