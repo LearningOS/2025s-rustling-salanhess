@@ -22,14 +22,26 @@
 // Execute `rustlings hint errors5` or use the `hint` watch subcommand for a
 // hint.
 
-// I AM NOT DONE
+/*
+让我帮你完成这个练习。这是一个关于错误处理的练习，主要涉及使用 Box<dyn Trait> 来处理不同类型的错误。
+通过分析代码，我们可以看到：
+代码中有两种可能的错误类型：ParseIntError（来自字符串解析）和 CreationError（来自 PositiveNonzeroInteger 创建）
+我们需要找到一个这两种错误都实现的 trait 来替换 ???
+从代码中可以看到 CreationError 实现了 error::Error trait
+由于 ParseIntError 也实现了 std::error::Error trait，所以这就是我们要找的共同 trait。
+现在代码应该可以编译了。让我解释一下这个修改：
+我们将 ??? 替换为 error::Error，这是一个 trait，代表任何可以作为错误处理的类型。
+Box<dyn error::Error> 表示一个指向实现了 error::Error trait 的类型的智能指针。
+这样的返回类型允许我们返回任何实现了 error::Error trait 的错误，包括 ParseIntError 和 CreationError。
+这个修改使得 main 函数可以处理代码中可能出现的两种错误类型，因为它们都实现了 error::Error trait。? 运算符会自动将这些错误转换为 Box<dyn error::Error>。
+*/
 
 use std::error;
 use std::fmt;
 use std::num::ParseIntError;
 
 // TODO: update the return type of `main()` to make this compile.
-fn main() -> Result<(), Box<dyn ???>> {
+fn main() -> Result<(), Box<dyn error::Error>> {
     let pretend_user_input = "42";
     let x: i64 = pretend_user_input.parse()?;
     println!("output={:?}", PositiveNonzeroInteger::new(x)?);
