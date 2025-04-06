@@ -22,6 +22,39 @@
 // the `FromIterator` trait is used in `collect()`. This trait is REALLY powerful! It
 // can make the solution to this exercise infinitely easier.
 
+/*
+让我帮你完成这个关于迭代器的练习。这个练习需要我们实现三个函数：divide、result_with_list 和 list_of_results。让我们一步步来解决。
+首先，让我实现 divide 函数：现在让我们实现 result_with_list 和 list_of_results 函数：
+
+让我帮你完成这个关于迭代器的练习。
+这个练习需要我们实现三个函数：`divide`、`result_with_list` 和 `list_of_results`。让我们一步步来解决。
+让我解释这些实现：
+
+1. **`divide` 函数**：
+   - 首先检查除数是否为 0，如果是则返回 `DivisionError::DivideByZero`
+   - 然后检查是否能整除（使用取模运算 `%`）
+   - 如果能整除，返回除法结果
+   - 如果不能整除，返回 `DivisionError::NotDivisible` 错误
+
+2. **`result_with_list` 函数**：
+   - 返回类型是 `Result<Vec<i32>, DivisionError>`
+   - 使用 `collect()` 将迭代器的结果收集到一个 `Result`
+   - 如果所有除法都成功，返回包含所有结果的 vector
+   - 如果有任何错误，返回第一个遇到的错误
+
+3. **`list_of_results` 函数**：
+   - 返回类型是 `Vec<Result<i32, DivisionError>>`
+   - 同样使用 `collect()`，但这次收集到一个包含所有 `Result` 的 vector
+   - 每个除法操作的结果都被保留在 vector 中，无论成功还是失败
+
+这个练习展示了 Rust 迭代器的强大功能：
+- 使用 `map` 转换数据
+- 使用 `collect` 收集结果
+- 处理错误传播
+- 不同的结果类型收集策略（单个 `Result` vs `Vec` 的 `Result`）
+
+
+*/
 #[derive(Debug, PartialEq, Eq)]
 pub enum DivisionError {
     NotDivisible(NotDivisibleError),
@@ -37,23 +70,35 @@ pub struct NotDivisibleError {
 // Calculate `a` divided by `b` if `a` is evenly divisible by `b`.
 // Otherwise, return a suitable error.
 pub fn divide(a: i32, b: i32) -> Result<i32, DivisionError> {
-    todo!();
+    if b == 0 {
+        return Err(DivisionError::DivideByZero);
+    }
+    if a % b == 0 {
+        Ok(a / b)
+    } else {
+        Err(DivisionError::NotDivisible(NotDivisibleError {
+            dividend: a,
+            divisor: b,
+        }))
+    }
 }
 
 // Complete the function and return a value of the correct type so the test
 // passes.
 // Desired output: Ok([1, 11, 1426, 3])
-fn result_with_list() -> () {
+fn result_with_list() -> Result<Vec<i32>, DivisionError> {
     let numbers = vec![27, 297, 38502, 81];
     let division_results = numbers.into_iter().map(|n| divide(n, 27));
+    division_results.collect()
 }
 
 // Complete the function and return a value of the correct type so the test
 // passes.
 // Desired output: [Ok(1), Ok(11), Ok(1426), Ok(3)]
-fn list_of_results() -> () {
+fn list_of_results() -> Vec<Result<i32, DivisionError>> {
     let numbers = vec![27, 297, 38502, 81];
     let division_results = numbers.into_iter().map(|n| divide(n, 27));
+    division_results.collect()
 }
 
 #[cfg(test)]
