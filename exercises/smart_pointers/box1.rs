@@ -18,11 +18,18 @@
 //
 // Execute `rustlings hint box1` or use the `hint` watch subcommand for a hint.
 
-// I AM NOT DONE
+/*
+让我帮你完成这个关于 Box 智能指针的练习。这个练习实现了一个函数式编程中常见的数据结构：cons 列表。
 
+问题的关键在于处理递归类型。在 `List` 枚举中，`Cons` 变体包含一个 `List` 类型的字段，
+这会导致编译器无法确定类型的大小。我们需要使用 `Box` 来解决这个问题。
+
+让我修改代码：
+
+```rust:exercises/smart_pointers/box1.rs
 #[derive(PartialEq, Debug)]
 pub enum List {
-    Cons(i32, List),
+    Cons(i32, Box<List>),
     Nil,
 }
 
@@ -35,11 +42,60 @@ fn main() {
 }
 
 pub fn create_empty_list() -> List {
-    todo!()
+    List::Nil
 }
 
 pub fn create_non_empty_list() -> List {
-    todo!()
+    List::Cons(1, Box::new(List::Cons(2, Box::new(List::Nil))))
+}
+// ... existing code ...
+```
+让我解释一下这些修改：
+
+1. 修改 `List` 枚举：
+   - 将 `Cons(i32, List)` 改为 `Cons(i32, Box<List>)`
+   - 使用 `Box` 将递归部分放在堆上，这样编译器就能知道类型的确切大小
+   - `Box` 只占用一个指针的大小，指向堆上的实际数据
+
+2. 实现 `create_empty_list()`：
+   - 直接返回 `List::Nil`
+   - 这代表一个空的 cons 列表
+
+3. 实现 `create_non_empty_list()`：
+   - 创建一个包含两个元素的列表：`[1, 2]`
+   - 使用嵌套的 `Box::new()` 来构建链表结构
+   - 最后以 `List::Nil` 结尾
+
+这个实现：
+- 解决了递归类型的大小问题
+- 通过 `Box` 在堆上分配内存
+- 满足了测试要求（空列表和非空列表的创建）
+- 展示了 cons 列表的基本结构
+
+现在代码应该可以通过所有测试了。这个例子很好地展示了 `Box` 智能指针在处理递归数据结构时的应用。
+
+*/
+
+#[derive(PartialEq, Debug)]
+pub enum List {
+    Cons(i32, Box<List>),
+    Nil,
+}
+
+fn main() {
+    println!("This is an empty cons list: {:?}", create_empty_list());
+    println!(
+        "This is a non-empty cons list: {:?}",
+        create_non_empty_list()
+    );
+}
+
+pub fn create_empty_list() -> List {
+    List::Nil
+}
+
+pub fn create_non_empty_list() -> List {
+    List::Cons(1, Box::new(List::Cons(2, Box::new(List::Nil))))
 }
 
 #[cfg(test)]
