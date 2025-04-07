@@ -8,13 +8,17 @@
 // returns the proper type.
 //
 // Execute `rustlings hint using_as` or use the `hint` watch subcommand for a
-// hint.
 
-// I AM NOT DONE
+/*
+hint
+Use the `as` operator to cast one of the operands in the last line of the
+`average` function into the expected return type.
+*/
 
 fn average(values: &[f64]) -> f64 {
     let total = values.iter().sum::<f64>();
-    total / values.len()
+    total / values.len() as f64
+    //total / values.len()
 }
 
 fn main() {
