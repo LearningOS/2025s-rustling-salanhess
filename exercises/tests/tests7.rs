@@ -32,9 +32,12 @@
 // to pass this exercise.
 //
 // Execute `rustlings hint tests7` or use the `hint` watch subcommand for a
-// hint.
+/*
+hint
+The command to set up an environment variable is "rustc-env=VAR=VALUE".
+*/
 
-// I AM NOT DONE
+//refer to build.rs
 
 fn main() {}
 

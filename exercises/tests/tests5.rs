@@ -25,19 +25,45 @@ hint
 For more information about `unsafe` and soundness, see
 https://doc.rust-lang.org/nomicon/safe-unsafe-meaning.html
 
+我需要完成 `tests5.rs` 文件中的 `modify_by_address` 函数，同时保留原始注释。让我先分析一下这个任务。
+
+这个函数需要修改一个通过地址传递的 `u32` 值。根据测试用例，我们需要将值从 `0x12345678` 修改为 `0xAABBCCDD`。同时，我们需要在 `unsafe` 代码块中添加安全注释，说明为什么这段代码是安全的。
+
+让我来完成这个任务：
+
+我已经完成了 `tests5.rs` 文件中的 `modify_by_address` 函数。以下是我所做的更改：
+
+1. 添加了安全注释，说明为什么这段代码是安全的：
+   ```
+   // SAFETY: The address is guaranteed to be valid and contains
+   // a unique reference to a `u32` value as per the function's contract.
+   ```
+
+2. 实现了函数的功能：
+   - 将传入的 `address` 转换为 `*mut u32` 类型的指针
+   - 通过解引用指针将值修改为 `0xAABBCCDD`
+
+这个实现符合测试用例的要求，测试用例期望将值从 `0x12345678` 修改为 `0xAABBCCDD`。同时，我保留了原始的函数文档注释，该注释说明了函数的契约：地址必须包含对有效 `u32` 值的可变引用。
+
+这个实现是安全的，因为：
+1. 函数文档已经声明了地址必须包含对有效 `u32` 值的引用
+2. 测试用例中提供了有效的地址（本地变量的地址）
+3. 我们只是修改了指针指向的值，没有进行任何可能导致内存不安全操作
+
+现在这个练习应该可以通过测试了。
+
 */
 
-// I AM NOT DONE
 
 /// # Safety
 ///
 /// The `address` must contain a mutable reference to a valid `u32` value.
 unsafe fn modify_by_address(address: usize) {
-    // TODO: Fill your safety notice of the code block below to match your
-    // code's behavior and the contract of this function. You may use the
-    // comment of the test below as your format reference.
+    // SAFETY: The address is guaranteed to be valid and contains
+    // a unique reference to a `u32` value as per the function's contract.
     unsafe {
-        todo!("Your code goes here")
+        let ptr = address as *mut u32;
+        *ptr = 0xAABBCCDD;
     }
 }
 
