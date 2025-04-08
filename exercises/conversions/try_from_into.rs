@@ -9,7 +9,29 @@
 // Execute `rustlings hint try_from_into` or use the `hint` watch subcommand for
 // a hint.
 
+/*
+hint
+Follow the steps provided right before the `TryFrom` implementation.
+You can also use the example at https://doc.rust-lang.org/std/convert/trait.TryFrom.html
+
+Is there an implementation of `TryFrom` in the standard library that
+can both do the required integer conversion and check the range of the input?
+
+Another hint: Look at the test cases to see which error variants to return.
+
+Yet another hint: You can use the `map_err` or `or` methods of `Result` to
+convert errors.
+
+Yet another hint: If you would like to propagate errors by using the `?`
+operator in your solution, you might want to look at
+https://doc.rust-lang.org/stable/rust-by-example/error/multiple_error_types/reenter_question_mark.html
+
+Challenge: Can you make the `TryFrom` implementations generic over many integer types?
+
+*/
+
 use std::convert::{TryFrom, TryInto};
+use std::num::TryFromIntError;
 
 #[derive(Debug, PartialEq)]
 struct Color {
@@ -37,24 +59,56 @@ enum IntoColorError {
 // time, but the slice implementation needs to check the slice length! Also note
 // that correct RGB color values must be integers in the 0..=255 range.
 
-// Tuple implementation
-impl TryFrom<(i16, i16, i16)> for Color {
+// 为所有整数类型实现 TryFrom
+impl<T> TryFrom<(T, T, T)> for Color
+where
+    T: TryInto<u8> + Copy,
+    T::Error: Into<TryFromIntError>,
+{
     type Error = IntoColorError;
-    fn try_from(tuple: (i16, i16, i16)) -> Result<Self, Self::Error> {
+    fn try_from(tuple: (T, T, T)) -> Result<Self, Self::Error> {
+        let (red, green, blue) = tuple;
+        Ok(Color {
+            red: red.try_into().map_err(|_| IntoColorError::IntConversion)?,
+            green: green.try_into().map_err(|_| IntoColorError::IntConversion)?,
+            blue: blue.try_into().map_err(|_| IntoColorError::IntConversion)?,
+        })
     }
 }
 
-// Array implementation
-impl TryFrom<[i16; 3]> for Color {
+impl<T, const N: usize> TryFrom<[T; N]> for Color
+where
+    T: TryInto<u8> + Copy,
+    T::Error: Into<TryFromIntError>,
+{
     type Error = IntoColorError;
-    fn try_from(arr: [i16; 3]) -> Result<Self, Self::Error> {
+    fn try_from(arr: [T; N]) -> Result<Self, Self::Error> {
+        if N != 3 {
+            return Err(IntoColorError::BadLen);
+        }
+        Ok(Color {
+            red: arr[0].try_into().map_err(|_| IntoColorError::IntConversion)?,
+            green: arr[1].try_into().map_err(|_| IntoColorError::IntConversion)?,
+            blue: arr[2].try_into().map_err(|_| IntoColorError::IntConversion)?,
+        })
     }
 }
 
-// Slice implementation
-impl TryFrom<&[i16]> for Color {
+impl<T> TryFrom<&[T]> for Color
+where
+    T: TryInto<u8> + Copy,
+    T::Error: Into<TryFromIntError>,
+{
     type Error = IntoColorError;
-    fn try_from(slice: &[i16]) -> Result<Self, Self::Error> {
+    fn try_from(slice: &[T]) -> Result<Self, Self::Error> {
+        if slice.len() != 3 {
+            return Err(IntoColorError::BadLen);
+        }
+        Ok(Color {
+            red: slice[0].try_into().map_err(|_| IntoColorError::IntConversion)?,
+            green: slice[1].try_into().map_err(|_| IntoColorError::IntConversion)?,
+            blue: slice[2].try_into().map_err(|_| IntoColorError::IntConversion)?,
+        })
     }
 }
 
