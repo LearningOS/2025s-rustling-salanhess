@@ -2,7 +2,44 @@
 	single linked list merge
 	This problem requires you to merge two ordered singly linked lists into one ordered singly linked list
 */
-// I AM NOT DONE
+/*
+我来帮你完成 `algorithm1.rs` 文件中的链表合并功能。根据题目要求，我需要实现一个函数来合并两个有序的单向链表。
+让我修改 `algorithm1.rs` 文件：
+我已经完成了 `algorithm1.rs` 文件中的链表合并功能。以下是我实现的 `merge` 函数的详细说明：
+
+### 实现思路
+1. 我添加了 `where T: Ord` 约束，确保链表中的元素可以进行比较，这对于合并有序链表是必要的。
+2. 合并过程分为三个主要步骤：
+   - 比较两个链表的当前节点，将较小的节点添加到结果链表中
+   - 处理链表 A 中剩余的节点
+   - 处理链表 B 中剩余的节点
+3. 对于每个节点，我使用了以下步骤：
+   - 从原始链表中取出节点（使用 `Box::from_raw`）
+   - 创建新节点并复制值
+   - 将新节点添加到结果链表中
+   - 更新指针以继续处理下一个节点
+### 代码解释
+
+1. 首先，我创建了一个新的空链表 `result` 来存储合并后的结果。
+2. 然后，我使用 `while let` 循环同时遍历两个链表，比较当前节点的值：
+   ```rust
+   while let (Some(ptr_a), Some(ptr_b)) = (current_a, current_b) {
+       let val_a = unsafe { &(*ptr_a.as_ptr()).val };
+       let val_b = unsafe { &(*ptr_b.as_ptr()).val };
+       
+       if val_a <= val_b {
+           // 处理链表 A 的节点
+       } else {
+           // 处理链表 B 的节点
+       }
+   }
+3. 对于每个节点，我从原始链表中取出节点，创建新节点，并将其添加到结果链表中：
+4. 最后，我处理两个链表中剩余的节点，确保所有节点都被添加到结果链表中。
+
+这个实现应该能够正确地合并两个有序的单向链表，并保持结果链表的有序性。测试用例应该能够通过，因为它们验证了合并后的链表中的元素顺序是否正确。
+
+*/
+
 
 use std::fmt::{self, Display, Formatter};
 use std::ptr::NonNull;
@@ -70,13 +107,95 @@ impl<T> LinkedList<T> {
         }
     }
 	pub fn merge(list_a:LinkedList<T>,list_b:LinkedList<T>) -> Self
+	where
+		T: Ord,
 	{
-		//TODO
-		Self {
-            length: 0,
-            start: None,
-            end: None,
-        }
+		let mut result = LinkedList::<T>::new();
+		let mut current_a = list_a.start;
+		let mut current_b = list_b.start;
+		
+		// 比较两个链表的当前节点，将较小的节点添加到结果链表中
+		while let (Some(ptr_a), Some(ptr_b)) = (current_a, current_b) {
+			let val_a = unsafe { &(*ptr_a.as_ptr()).val };
+			let val_b = unsafe { &(*ptr_b.as_ptr()).val };
+			
+			if val_a <= val_b {
+				// 从链表A中取出节点
+				let node_a = unsafe { Box::from_raw(ptr_a.as_ptr()) };
+				let next_a = node_a.next;
+				
+				// 创建新节点并添加到结果链表
+				let mut new_node = Box::new(Node::new(node_a.val));
+				new_node.next = None;
+				let node_ptr = Some(unsafe { NonNull::new_unchecked(Box::into_raw(new_node)) });
+				
+				match result.end {
+					None => result.start = node_ptr,
+					Some(end_ptr) => unsafe { (*end_ptr.as_ptr()).next = node_ptr },
+				}
+				result.end = node_ptr;
+				result.length += 1;
+				
+				current_a = next_a;
+			} else {
+				// 从链表B中取出节点
+				let node_b = unsafe { Box::from_raw(ptr_b.as_ptr()) };
+				let next_b = node_b.next;
+				
+				// 创建新节点并添加到结果链表
+				let mut new_node = Box::new(Node::new(node_b.val));
+				new_node.next = None;
+				let node_ptr = Some(unsafe { NonNull::new_unchecked(Box::into_raw(new_node)) });
+				
+				match result.end {
+					None => result.start = node_ptr,
+					Some(end_ptr) => unsafe { (*end_ptr.as_ptr()).next = node_ptr },
+				}
+				result.end = node_ptr;
+				result.length += 1;
+				
+				current_b = next_b;
+			}
+		}
+		
+		// 处理剩余的节点
+		while let Some(ptr) = current_a {
+			let node = unsafe { Box::from_raw(ptr.as_ptr()) };
+			let next = node.next;
+			
+			let mut new_node = Box::new(Node::new(node.val));
+			new_node.next = None;
+			let node_ptr = Some(unsafe { NonNull::new_unchecked(Box::into_raw(new_node)) });
+			
+			match result.end {
+				None => result.start = node_ptr,
+				Some(end_ptr) => unsafe { (*end_ptr.as_ptr()).next = node_ptr },
+			}
+			result.end = node_ptr;
+			result.length += 1;
+			
+			current_a = next;
+		}
+		
+		while let Some(ptr) = current_b {
+			let node = unsafe { Box::from_raw(ptr.as_ptr()) };
+			let next = node.next;
+			
+			let mut new_node = Box::new(Node::new(node.val));
+			new_node.next = None;
+			let node_ptr = Some(unsafe { NonNull::new_unchecked(Box::into_raw(new_node)) });
+			
+			match result.end {
+				None => result.start = node_ptr,
+				Some(end_ptr) => unsafe { (*end_ptr.as_ptr()).next = node_ptr },
+			}
+			result.end = node_ptr;
+			result.length += 1;
+			
+			current_b = next;
+		}
+		
+		result
 	}
 }
 
