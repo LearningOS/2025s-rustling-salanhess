@@ -23,6 +23,65 @@ or a closure to wrap the error from `parse::<usize>`.
 Yet another hint: If you would like to propagate errors by using the `?`
 operator in your solution, you might want to look at
 https://doc.rust-lang.org/stable/rust-by-example/error/multiple_error_types/reenter_question_mark.html
+
+我来帮你完成 `from_str.rs` 的练习。这个练习与之前的 `from_into.rs` 类似，但需要返回错误而不是默认值。让我实现 `FromStr` trait：
+
+
+
+```rust:exercises/conversions/from_str.rs
+impl FromStr for Person {
+    type Err = ParsePersonError;
+    fn from_str(s: &str) -> Result<Person, Self::Err> {
+具体实现。。。
+    }
+}
+// ... existing code ...
+```
+让我解释一下这个实现：
+
+1. **错误处理**：
+   - 与 `from_into.rs` 不同，这里我们返回 `Result<Person, ParsePersonError>` 而不是默认值
+   - 使用自定义的 `ParsePersonError` 枚举来表示不同类型的错误
+
+2. **输入验证**：
+   - 检查空字符串，返回 `ParsePersonError::Empty`
+   - 使用 `split(',')` 分割字符串，如果分割结果不是两部分，返回 `ParsePersonError::BadLen`
+
+3. **名字处理**：
+   - 获取并清理名字部分
+   - 如果名字为空，返回 `ParsePersonError::NoName`
+
+4. **年龄处理**：
+   - 使用 `parse::<usize>()` 尝试解析年龄
+   - 使用 `map_err` 将 `ParseIntError` 转换为 `ParsePersonError::ParseInt`
+   - 使用 `?` 操作符来传播错误
+
+这个实现满足了所有测试用例的要求：
+- `empty_input()`: 处理空字符串
+- `good_input()`: 正确处理有效输入
+- `missing_age()`: 处理缺少年龄的情况
+- `invalid_age()`: 处理无效的年龄值
+- `missing_comma_and_age()`: 处理缺少逗号和年龄的情况
+- `missing_name()`: 处理缺少名字的情况
+- `trailing_comma()`: 处理额外的逗号
+
+通过实现 `FromStr` trait，我们可以使用 `parse()` 方法将字符串转换为 `Person` 对象，
+这在 Rust 中是一个常见的模式。
+
+错误类型转换：
+- 使用 map_err 可以将底层错误类型转换为我们的自定义错误类型
+- ? 操作符会自动处理这个转换后的错误
+
+提前返回：
+-如果解析失败，? 会立即从函数返回错误
+-这避免了深层嵌套的 match 语句
+
+  在我们的 Person 实现中，? 操作符帮助我们：
+-优雅地处理年龄解析错误
+-保持代码简洁易读
+-确保错误被正确传播到调用者
+这就是为什么在实现 FromStr trait 时，使用 ? 操作符是一个很好的选择，它让错误处理变得更加优雅和直观。
+
 */
 
 use std::num::ParseIntError;
