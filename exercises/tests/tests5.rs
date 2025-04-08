@@ -20,7 +20,12 @@
 // your own code, take a step back and use safe code instead!
 //
 // Execute `rustlings hint tests5` or use the `hint` watch subcommand for a
-// hint.
+/*
+hint
+For more information about `unsafe` and soundness, see
+https://doc.rust-lang.org/nomicon/safe-unsafe-meaning.html
+
+*/
 
 // I AM NOT DONE
 
