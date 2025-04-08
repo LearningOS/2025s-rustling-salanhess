@@ -7,7 +7,23 @@
 // https://doc.rust-lang.org/std/str/trait.FromStr.html
 //
 // Execute `rustlings hint from_str` or use the `hint` watch subcommand for a
-// hint.
+/*
+hint
+The implementation of FromStr should return an Ok with a Person object,
+or an Err with an error if the string is not valid.
+
+This is almost like the `from_into` exercise, but returning errors instead
+of falling back to a default value.
+
+Look at the test cases to see which error variants to return.
+
+Another hint: You can use the `map_err` method of `Result` with a function
+or a closure to wrap the error from `parse::<usize>`.
+
+Yet another hint: If you would like to propagate errors by using the `?`
+operator in your solution, you might want to look at
+https://doc.rust-lang.org/stable/rust-by-example/error/multiple_error_types/reenter_question_mark.html
+*/
 
 use std::num::ParseIntError;
 use std::str::FromStr;
@@ -31,7 +47,6 @@ enum ParsePersonError {
     ParseInt(ParseIntError),
 }
 
-// I AM NOT DONE
 
 // Steps:
 // 1. If the length of the provided string is 0, an error should be returned
@@ -52,6 +67,29 @@ enum ParsePersonError {
 impl FromStr for Person {
     type Err = ParsePersonError;
     fn from_str(s: &str) -> Result<Person, Self::Err> {
+        if s.is_empty() {
+            return Err(ParsePersonError::Empty);
+        }
+
+        let parts: Vec<&str> = s.split(',').collect();
+        if parts.len() != 2 {
+            return Err(ParsePersonError::BadLen);
+        }
+
+        let name = parts[0].trim();
+        if name.is_empty() {
+            return Err(ParsePersonError::NoName);
+        }
+
+        let age = parts[1]
+            .trim()
+            .parse::<usize>()
+            .map_err(ParsePersonError::ParseInt)?;
+
+        Ok(Person {
+            name: name.to_string(),
+            age,
+        })
     }
 }
 

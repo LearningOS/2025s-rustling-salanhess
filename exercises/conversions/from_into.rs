@@ -5,7 +5,52 @@
 // more about it at https://doc.rust-lang.org/std/convert/trait.From.html
 //
 // Execute `rustlings hint from_into` or use the `hint` watch subcommand for a
-// hint.
+
+/*
+hint
+Follow the steps provided right before the `From` implementation
+我来帮你完成这个练习并解释代码。这是一个关于 Rust 中 `From` trait 实现的练习，
+需要将字符串转换为 `Person` 结构体。
+
+首先，让我完成 `From` trait 的实现：
+
+
+```rust:exercises/conversions/from_into.rs
+impl From<&str> for Person {
+    fn from(s: &str) -> Person {
+   xxxx实现
+    }
+}
+// ... existing code ...
+```
+让我解释一下这个实现：
+
+1. **输入验证**：
+   - 首先检查输入字符串是否为空，如果为空则返回默认的 `Person` 对象
+   - 使用 `split(',')` 将字符串按逗号分割成两部分
+   - 检查分割后的结果是否正好有两部分，如果不是则返回默认值
+
+2. **名字处理**：
+   - 获取第一部分作为名字，并使用 `trim()` 去除可能的空白字符
+   - 如果名字为空，返回默认的 `Person` 对象
+
+3. **年龄处理**：
+   - 尝试将第二部分解析为 `usize` 类型的年龄
+   - 使用 `match` 表达式处理解析结果：
+     - 如果解析成功，创建新的 `Person` 对象
+     - 如果解析失败，返回默认的 `Person` 对象
+
+这个实现满足了所有测试用例的要求：
+- 处理空字符串
+- 处理格式不正确的输入（如缺少逗号）
+- 处理无效的年龄值
+- 处理名字为空的情况
+- 处理额外的逗号或字符串
+
+通过实现 `From` trait，我们同时也自动获得了 `Into` trait 的实现，
+这就是为什么在 `main` 函数中可以使用 `into()` 方法将字符串转换为 `Person` 对象。
+
+*/
 
 #[derive(Debug)]
 struct Person {
@@ -40,10 +85,30 @@ impl Default for Person {
 // If while parsing the age, something goes wrong, then return the default of
 // Person Otherwise, then return an instantiated Person object with the results
 
-// I AM NOT DONE
 
 impl From<&str> for Person {
     fn from(s: &str) -> Person {
+        if s.is_empty() {
+            return Person::default();
+        }
+
+        let parts: Vec<&str> = s.split(',').collect();
+        if parts.len() != 2 {
+            return Person::default();
+        }
+
+        let name = parts[0].trim();
+        if name.is_empty() {
+            return Person::default();
+        }
+
+        match parts[1].trim().parse::<usize>() {
+            Ok(age) => Person {
+                name: name.to_string(),
+                age,
+            },
+            Err(_) => Person::default(),
+        }
     }
 }
 
